@@ -11,7 +11,7 @@ The toolkit we carry. Order on a new Mac:
    (`chmod 600`), then re-run.
 3. The manual steps below: things no script can safely set.
 
-If a step here can be scripted, move it into `install.sh` and delete it from this list.
+If a step here can be scripted, move it into the playbook (or `bootstrap.sh`) and delete it from this list.
 
 ## Manual steps
 

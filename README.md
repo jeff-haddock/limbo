@@ -19,7 +19,7 @@ change it there, re-run. On a fresh Mac, `bootstrap.sh` installs Homebrew and An
 
 | Role | Does |
 |---|---|
-| `homebrew` | checks everything in `Brewfile` is installed (installs happen in `bootstrap.sh`, in your terminal) |
+| `homebrew` | checks everything in `Brewfile` is installed (installs happen in your terminal: `bootstrap.sh`, or `brew bundle install` after adding an app) |
 | `dotfiles` | the symlinks below (a real file in the way is moved to `*.pre-limbo`, never clobbered) |
 | `macos` | `defaults` settings: Dock, tiling off |
 | `ssh` | a fresh keypair per Mac if missing (keys are never copied between machines) |

@@ -5,7 +5,7 @@
 
 - name: Generate any missing keypair
   ansible.builtin.command: >
-    ssh-keygen -t ed25519 -N "" -C "{{ item }}@{{ ansible_hostname }}"
+    ssh-keygen -t ed25519 -N "" -C "{{ item }}@{{ ansible_facts['hostname'] }}"
     -f "{{ ssh_dir }}/{{ item }}"
   args:
     creates: "{{ ssh_dir }}/{{ item }}"
