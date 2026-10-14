@@ -1,0 +1,18 @@
+# ~/.zshrc → symlink to limbo/zsh/zshrc. Edit here, then `restart`.
+# Machine-level shell only; Virgil's layer is sourced at the bottom from its own repo.
+
+export PATH="$HOME/.local/bin:$PATH"
+
+# zoxide: `z <partial>` jumps to frequent dirs. Guarded so the shell works before brew bundle.
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+# restart: swap this shell for a fresh login shell (picks up .zshrc edits). From the old Mac.
+alias restart='exec zsh -l'
+
+# nvm (Node). Installed by its own script, not brew; see SETUP.md.
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# Virgil shell layer (tracked in the Virgil repo)
+[ -f "$HOME/work/projects/infra/virgil/shell/virgil.zsh" ] && source "$HOME/work/projects/infra/virgil/shell/virgil.zsh"

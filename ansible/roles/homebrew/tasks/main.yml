@@ -1,0 +1,17 @@
+---
+# Checks that everything in limbo's Brewfile is installed. It never installs: installs can
+# prompt for sudo (Ansible can't show that prompt) and they're Jeff's call, so they happen in
+# his terminal (bootstrap.sh, or `brew bundle install` by hand). Upgrades aren't this
+# playbook's job either: --no-upgrade means "out of date" still counts as installed.
+
+- name: Check everything in the Brewfile is installed
+  ansible.builtin.command: brew bundle check --no-upgrade --verbose --file="{{ limbo_dir }}/Brewfile"
+  register: brew_check
+  changed_when: false
+  failed_when: false
+  check_mode: false   # read-only, so it runs in --check too and the preview tells the truth
+
+- name: Stop if something in the Brewfile is missing
+  ansible.builtin.fail:
+    msg: "{{ brew_check.stdout_lines | select('match', '^→') | list + ['Install them yourself: brew bundle install --file=' ~ limbo_dir ~ '/Brewfile'] }}"
+  when: brew_check.rc != 0

@@ -1,0 +1,23 @@
+---
+# macOS settings that SETUP.md used to list as clicks. The keyboard modifier remap stays
+# manual: it's keyed to one specific external keyboard.
+
+- name: Dock hides itself
+  community.general.osx_defaults:
+    domain: com.apple.dock
+    key: autohide
+    type: bool
+    value: true
+  notify: Restart Dock
+
+# Rectangle does the snapping; macOS's own tiling fights it.
+- name: Turn off macOS window tiling
+  community.general.osx_defaults:
+    domain: com.apple.WindowManager
+    key: "{{ item }}"
+    type: bool
+    value: false
+  loop:
+    - EnableTilingByEdgeDrag
+    - EnableTopTilingByEdgeDrag
+    - EnableTilingOptionAccelerator

@@ -1,0 +1,22 @@
+---
+# Where everything lives. The single source of truth for paths: on the next laptop, change a
+# path here, re-run, and every role (and every config that embeds a path) follows.
+
+home_dir: "{{ lookup('env', 'HOME') }}"
+infra_dir: "{{ home_dir }}/work/projects/infra"
+
+# --- repos ---
+limbo_dir: "{{ infra_dir }}/limbo"
+virgil_dir: "{{ infra_dir }}/virgil"
+# Virgil's private data (db, transcripts, privacy terms). Never in git. Virgil's code has this
+# same path as its default; if it moves, also export VIRGIL_DATA (zshrc + the nightly plist).
+virgil_data_dir: "{{ infra_dir }}/virgil-data"
+
+# --- where apps look for their config ---
+ssh_dir: "{{ home_dir }}/.ssh"
+vscode_user_dir: "{{ home_dir }}/Library/Application Support/Code/User"
+obs_config_dir: "{{ home_dir }}/Library/Application Support/obs-studio"
+
+# --- media ---
+obs_assets_dir: "{{ limbo_dir }}/assets/obs"         # images the OBS scenes show
+video_raw_dir: "{{ home_dir }}/work/video/_raw_video_dump"   # where OBS records

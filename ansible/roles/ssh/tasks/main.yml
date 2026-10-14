@@ -1,0 +1,21 @@
+---
+# One keypair per Mac, never copied between machines: a lost laptop means revoking its keys,
+# nothing else. Existing keys are never touched. A new one gets its public half printed
+# so Jeff can register it (GitHub, GitLab, the HM50's authorized_keys).
+
+- name: Generate any missing keypair
+  ansible.builtin.command: >
+    ssh-keygen -t ed25519 -N "" -C "{{ item }}@{{ ansible_hostname }}"
+    -f "{{ ssh_dir }}/{{ item }}"
+  args:
+    creates: "{{ ssh_dir }}/{{ item }}"
+  loop: "{{ ssh_keys }}"
+  register: ssh_keygen
+
+- name: Show the public half of each new key (register these)
+  ansible.builtin.debug:
+    msg: "{{ lookup('file', ssh_dir ~ '/' ~ item.item ~ '.pub') }}"
+  loop: "{{ ssh_keygen.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item is changed and not ansible_check_mode

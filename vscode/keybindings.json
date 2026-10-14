@@ -1,0 +1,12 @@
+// Jeff's keyboard nav: cmd+alt+arrows move between terminals and docs.
+// In a terminal: left/right = prev/next terminal, up = the open doc.
+// In a doc: left/right = prev/next tab, down = the terminal.
+[
+  { "key": "cmd+alt+right", "command": "workbench.action.terminal.focusNextPane",     "when": "terminalFocus" },
+  { "key": "cmd+alt+left",  "command": "workbench.action.terminal.focusPreviousPane", "when": "terminalFocus" },
+  { "key": "cmd+alt+up",    "command": "workbench.action.focusActiveEditorGroup",     "when": "terminalFocus" },
+
+  { "key": "cmd+alt+right", "command": "workbench.action.nextEditor",     "when": "!terminalFocus" },
+  { "key": "cmd+alt+left",  "command": "workbench.action.previousEditor", "when": "!terminalFocus" },
+  { "key": "cmd+alt+down",  "command": "workbench.action.terminal.focus", "when": "!terminalFocus" }
+]

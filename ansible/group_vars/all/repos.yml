@@ -1,0 +1,3 @@
+---
+# Repos limbo clones onto a fresh Mac (never touches an existing checkout).
+virgil_repo: git@github.com:jeff-haddock/virgil.git

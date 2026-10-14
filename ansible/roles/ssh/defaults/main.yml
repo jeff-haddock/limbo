@@ -1,0 +1,6 @@
+---
+# The keys limbo's ssh/config names (IdentityFile). Add one here when you add a Host there.
+ssh_keys:
+  - githubssh
+  - haddoserver
+  - id_ed25519_gitlab

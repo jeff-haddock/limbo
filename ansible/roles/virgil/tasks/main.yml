@@ -1,0 +1,44 @@
+---
+# Virgil is its own repo with its own installer. limbo makes sure it's here and runs that
+# installer; Virgil decides what installing means.
+
+- name: Clone Virgil if it isn't here (never touches an existing checkout)
+  ansible.builtin.git:
+    repo: "{{ virgil_repo }}"
+    dest: "{{ virgil_dir }}"
+    update: false
+
+# Private: conversation history and the family-term list. Owner-only.
+- name: Make Virgil's data folder
+  ansible.builtin.file:
+    path: "{{ virgil_data_dir }}"
+    state: directory
+    mode: "0700"
+
+# The list of family names the nightly redacts. It never goes in any repo, not even
+# encrypted, so it lives in Bitwarden (the Ansible item) and is restored by hand. Without it the nightly
+# refuses to run, so stop here and say how to fix it.
+- name: Look for the privacy term list
+  ansible.builtin.stat:
+    path: "{{ virgil_data_dir }}/privacy-terms.txt"
+  register: privacy_terms
+
+- name: Stop if the privacy term list is missing
+  ansible.builtin.fail:
+    msg: >-
+      {{ virgil_data_dir }}/privacy-terms.txt is missing. Copy the privacy terms from the
+      Ansible item in Bitwarden (one term per line), chmod 600, then re-run.
+  when: not privacy_terms.stat.exists
+
+# Virgil's install.sh prints a line only when it changes something (link / seeded / added /
+# installed), so that's what "changed" means here.
+- name: Run Virgil's installer
+  ansible.builtin.command: bash "{{ virgil_dir }}/install.sh"
+  register: virgil_install
+  changed_when: virgil_install.stdout is regex('(?m)^\s*(link |seeded|added:|installed )')
+  when: not ansible_check_mode
+
+- name: Show what Virgil's installer did
+  ansible.builtin.debug:
+    var: virgil_install.stdout_lines
+  when: virgil_install is changed

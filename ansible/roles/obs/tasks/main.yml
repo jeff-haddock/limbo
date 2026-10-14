@@ -1,0 +1,75 @@
+---
+# OBS rewrites its own config, so limbo doesn't symlink it. Instead: seed the profile and the
+# scene collection if they're missing, then pin only the paths, from group_vars. Move a
+# folder, change paths.yml, re-run, and OBS follows.
+
+# OBS saves its config on quit and would overwrite these edits.
+- name: Check OBS isn't running
+  ansible.builtin.command: pgrep -xi obs
+  register: obs_running
+  changed_when: false
+  failed_when: obs_running.rc == 0
+  check_mode: false
+
+- name: Make the recording folder
+  ansible.builtin.file:
+    path: "{{ video_raw_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Seed the Jeff's Desk profile if it's missing
+  ansible.builtin.copy:
+    src: "{{ limbo_dir }}/obs/profiles/jeffs-desk/"
+    dest: "{{ obs_config_dir }}/basic/profiles/jeffs-desk/"
+    force: false
+    mode: preserve
+
+- name: Record into the raw video folder
+  community.general.ini_file:
+    path: "{{ obs_config_dir }}/basic/profiles/jeffs-desk/basic.ini"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ video_raw_dir }}"
+    no_extra_spaces: true
+  loop:
+    - { section: SimpleOutput, option: FilePath }
+    - { section: AdvOut, option: RecFilePath }
+    - { section: AdvOut, option: FFFilePath }
+  loop_control:
+    label: "{{ item.section }}.{{ item.option }}"
+
+- name: Make Jeff's Desk the active profile
+  community.general.ini_file:
+    path: "{{ obs_config_dir }}/user.ini"
+    section: Basic
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    no_extra_spaces: true
+  loop:
+    - { option: Profile, value: "Jeff's Desk" }
+    - { option: ProfileDir, value: jeffs-desk }
+  loop_control:
+    label: "{{ item.option }}"
+
+- name: Seed the Jeff's Desk scene collection if it's missing
+  ansible.builtin.copy:
+    src: "{{ limbo_dir }}/obs/scenes/jeffs-desk.json"
+    dest: "{{ obs_config_dir }}/basic/scenes/Jeffs_Desk.json"
+    force: false
+    mode: "0644"
+
+# The scene file stores image paths as absolute paths. For each image in obs_assets_dir,
+# point every reference to it there, matched by file name, wherever it lived before.
+- name: List the OBS assets
+  ansible.builtin.find:
+    paths: "{{ obs_assets_dir }}"
+  register: obs_assets
+
+- name: Point the scenes' images at obs_assets_dir
+  ansible.builtin.replace:
+    path: "{{ obs_config_dir }}/basic/scenes/Jeffs_Desk.json"
+    regexp: '"[^"]*/{{ item.path | basename | regex_escape }}"'
+    replace: '"{{ item.path }}"'
+  loop: "{{ obs_assets.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"

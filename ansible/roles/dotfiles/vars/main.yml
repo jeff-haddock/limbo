@@ -1,0 +1,8 @@
+---
+# src: path inside limbo. dest: where the app reads it (folders come from group_vars).
+dotfiles_links:
+  - { src: zsh/zshrc, dest: "{{ home_dir }}/.zshrc" }
+  - { src: git/gitconfig, dest: "{{ home_dir }}/.gitconfig" }
+  - { src: ssh/config, dest: "{{ ssh_dir }}/config" }
+  - { src: vscode/settings.json, dest: "{{ vscode_user_dir }}/settings.json" }
+  - { src: vscode/keybindings.json, dest: "{{ vscode_user_dir }}/keybindings.json" }

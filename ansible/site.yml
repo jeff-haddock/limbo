@@ -1,0 +1,15 @@
+---
+# The Mac playbook. Run from limbo/ansible:  ansible-playbook site.yml --check --diff  (preview)
+# then  ansible-playbook site.yml  (apply). A second run should say changed=0.
+# This file is the live manifest: the roles below ARE what this Mac gets.
+# No become: everything lives in Jeff's home folder.
+
+- name: Configure Jeff's Mac
+  hosts: mac
+  roles:
+    - { role: homebrew, tags: [homebrew] }   # first: later roles use what it installs
+    - { role: dotfiles, tags: [dotfiles] }
+    - { role: macos, tags: [macos] }
+    - { role: ssh, tags: [ssh] }
+    - { role: obs, tags: [obs] }
+    - { role: virgil, tags: [virgil] }       # last: needs ssh (clone) and dotfiles (zshrc)

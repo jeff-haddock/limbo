@@ -1,0 +1,6 @@
+# ~/.gitconfig → symlink to limbo/git/gitconfig.
+[user]
+	name = Jeff Haddock
+	email = jeff.haddock.developer@gmail.com
+[init]
+	defaultBranch = main

@@ -1,0 +1,42 @@
+---
+# Each config file lives in limbo; the path the app reads becomes a symlink back to it.
+# Edit either path, it's the same file, and every change shows up as a git diff.
+
+- name: Look at each place an app reads its config
+  ansible.builtin.stat:
+    path: "{{ item.dest }}"
+  loop: "{{ dotfiles_links }}"
+  loop_control:
+    label: "{{ item.dest }}"
+  register: dotfile_stats
+
+# A real file where a link should go: move it aside, never clobber it. If a *.pre-limbo is
+# already there, this skips and the link task below fails loudly instead. Look, then decide.
+- name: Move a real config file aside to *.pre-limbo
+  ansible.builtin.command: mv "{{ item.item.dest }}" "{{ item.item.dest }}.pre-limbo"
+  args:
+    creates: "{{ item.item.dest }}.pre-limbo"
+  loop: "{{ dotfile_stats.results }}"
+  loop_control:
+    label: "{{ item.item.dest }}"
+  when: item.stat.exists and not item.stat.islnk
+
+# Make sure each folder exists; only ~/.ssh gets locked down (ssh refuses a loose one).
+- name: Make the parent folders
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "{{ '0700' if item == ssh_dir else omit }}"
+  loop: "{{ dotfiles_links | map(attribute='dest') | map('dirname') | unique | reject('equalto', home_dir) | list }}"
+
+- name: Link each config file to limbo
+  ansible.builtin.file:
+    src: "{{ limbo_dir }}/{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: link
+    # --check can't run the move above, so the real file is still there in a preview.
+    # force only in check mode (which changes nothing) so the preview shows the link.
+    force: "{{ ansible_check_mode }}"
+  loop: "{{ dotfiles_links }}"
+  loop_control:
+    label: "{{ item.dest }} → {{ item.src }}"
