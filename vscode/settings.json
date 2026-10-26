@@ -1,4 +1,5 @@
 {
     "task.allowAutomaticTasks": "on",
-    "explorer.confirmDelete": false
+    "explorer.confirmDelete": false,
+    "terminal.integrated.inheritEnv": false
 }

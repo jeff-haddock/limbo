@@ -53,6 +53,12 @@ to CYCLE SIZES (½ → ⅔ → ⅓), not "move to next display". Thirds/quarters
 bottom of the Shortcuts tab. macOS's own tiling is turned off by the playbook (`macos` role), so
 only Rectangle snaps.
 
+**Local Network access for the browser.** System Settings → Privacy & Security → Local Network →
+Google Chrome on, then fully quit and reopen Chrome. Without it, Chrome fails on LAN addresses with
+`ERR_ADDRESS_UNREACHABLE` while Terminal reaches them fine (it hit the AT&T gateway at `192.168.1.254`
+on 2026-10-26; oddly, the Nighthawk at `10.0.0.1` loaded anyway). Do the same for any other browser used for router admin.
+Remote Login stays **off** (Sharing); it was on only for the old-laptop migration.
+
 ## Open — decide, then record here
 
 - **Mic kill switch — not needed (2026-10-07).** The orange menu-bar dot shows when anything
